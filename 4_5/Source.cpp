@@ -3,142 +3,156 @@
 Тип списка:
 	Двусвязный нециклический, хранит вещественные числа
 Исходный Файл:
-	Текстовый;данные представлены в виде строк,
+	Текстовый; данные представлены в виде строк,
 	содержащих по два вещественных числа, записанных через пробел
 Действия над списком:
 	Вставка элемента в список – новые элементы  добавляются в конец списка
 	Удаление элементов – всех превышающих задаваемое значение.
 	Поиск элемента - по вводимому значению.
-	Сортировка списка  по убыванию. 
-	Распечатка  всех элементов списка (на экран)
-*/
-
-/*
-Разработать программу для:
-
-1.	Создания элементов линейного списка заданного типа в динамической памяти,
-	ввода значений списка из файла, установки связей между элементами.
-2. Выполнения заданных действий над списком (в любое время и в
-	любой последовательности, т.е выбор действий - по меню).
-
+	Сортировка списка по убыванию. 
+	Распечатка всех элементов списка (на экран)
 */
 
 #include <iostream>
 #include <fstream>
 #include <string>
+#include <conio.h>
 
 using namespace std;
 
 struct LIST {
 	double val;
-	LIST *pnext;
-	LIST *prev;
+	LIST * pnext;
+	LIST * prev;
 };
 
 void printList(LIST *ph);
 void menu(LIST *ph);
+void cont();
 void findValue(LIST * ph, double temp);
-void sortList(LIST * ph);
-LIST* addList(LIST *ph, double v);
+LIST * sortList(LIST * ph);
+LIST * deleteList(LIST * ph, double value);
+LIST * addList(LIST * ph, double v);
 
-int main(int argc, char *argv[]) {
+int main(int argc, char * argv[]) {
 	setlocale(0, "Rus");
 
 	ifstream fin("input.txt");
-	ofstream fout("output.txt");
 
-	LIST *ph = NULL;
+	LIST * ph = NULL;
 	double temp;
+
 	while (fin >> temp) {
 		ph = addList(ph, temp);
 	}
-	cout << "Данные успешно считаы из файла:" << endl;
-	printList(ph);
 
+	printList(ph);
+	cont();
 	menu(ph);
 	return 0;
 }
 
 //инициализация списка
-LIST *init(double v) {
-	LIST *pnew = new LIST;
+LIST * init(double v) {
+	LIST * pnew = new LIST;
 	pnew->val = v;
 	pnew->pnext = pnew->prev = NULL;
 	return pnew;
 }
 
 //добавление элемента в список
-LIST *addList(LIST *ph, double v) {
-	// 1)список пуст?
-	// 2) единственный элемент - голова
-	// 3) список частично заполнен
+LIST * addList(LIST * ph, double v) {
 	if (ph == NULL) {
 		ph = init(v);
 		return ph;
 	}
-	LIST *cur;
-	for (cur = ph; (cur->pnext != NULL) && (v>cur->val); cur = cur->pnext);
+
+	LIST * cur;
+	for (cur = ph; (cur->pnext != NULL); cur = cur->pnext);
 	
-	if (cur->pnext == NULL){    //вставка в конец списка
+	if (cur->pnext == NULL) {    //вставка в конец списка
 		LIST *pnew = init(v);
 		cur->pnext = pnew;
 		pnew->prev = cur;
 		return ph;
 	}
-
 	return ph;
 }
 
 //вывод списка в стандартный поток
-void printList(LIST *ph) {
+void printList(LIST * ph) {
+	system("cls");
+	cout << "Значения в списке:" << endl;
 	for (LIST*cur = ph; cur != NULL; cur = cur->pnext)
 		cout << cur->val << endl;
 }
 
 //Процедура вывода меню
-void menu(LIST *ph) {
+void menu(LIST * ph) {
 	short unsigned int m;
 	double temp;
 
 	string s;
 
 	system("cls");
-	for (int i = 0; i < 15; i++) {
+	for (int i = 0; i < 70; i++) {
 		cout << "-";
 	}
-	cout << endl << "Меню действий над списком:" << endl;
-	cout << "1. Вставка элемента в конец списка." << endl;
-	cout << "2. Удалить все элементы, которые больше зачения." << endl;
-	cout << "3. Поиск элемента." << endl;
-	cout << "4. Сортировка списка по убыванию." << endl;
-	cout << "5. Вывод списка на экран." << endl;
-	cout << "6. Выйти из программы." << endl;
+
+	cout << endl << "\t\tМеню действий над списком:" << endl;
+	cout << "\t1. Вставка элемента в конец списка." << endl;
+	cout << "\t-2. Удалить все элементы, которые больше зачения." << endl;
+	cout << "\t3. Поиск элемента." << endl;
+	cout << "\t-4. Сортировка списка по убыванию." << endl;
+	cout << "\t5. Вывод списка на экран." << endl;
+	cout << "\t6. Выйти из программы." << endl;
 	cin >> m;
+
 	switch (m) {
-	case(1): cout << "Введите значение, которое хотите добавить в конец списка:" << endl;  break;
-	case(2): cout << "Введите значение:" << endl; cin >> temp;  break;
-	case(3): cout << "Введите значение:" << endl; cin >> temp; findValue(ph, temp); break;
-	case(4): sortList(ph); break;
-	case(5): system("cls"); printList(ph); break;
+	case(1): cout << "Введите значение: "; cin >> temp; addList(ph, temp);  break;
+	case(2): cout << "Введите значение: " << endl; cin >> temp; ph = deleteList(ph, temp); break;
+	case(3): cout << "Введите значение: " << endl; cin >> temp; findValue(ph, temp); break;
+	case(4): ph = sortList(ph); cout << "Сортировка выполнена успешно." << endl; break;
+	case(5): printList(ph); break;
 	case(6):
-		cout << "Вы действительно хотите закрыть программу? (y/n)" << endl;
+		cout << "Вы действительно хотите выйти из программы? (y/n)" << endl;
 		cin >> s;
-		if (s == "y" || s == "у" || s == "д")
+		if (s == "y")
 			return;
 		break;
 	default:
 		cout << "Введено некорректное значеие, повторите попытку." << endl;
 		break;
 	}
+	cont();
 	menu(ph);
 }
 
 //Поиск заданного значения в списке
-void findValue(LIST *ph, double temp) {
-	
+void findValue(LIST * ph, double value) {
+	unsigned int counter = 1;
+	LIST * cur = ph;
+	for (cur = ph; (cur->val != value) && (cur->pnext != NULL); cur = cur->pnext)
+		counter++;
+	if (cur->val == value) {
+		cout << "Найденное значние: " << cur->val << " В списке под номером " << counter << endl;
+	} else if (cur->pnext == NULL) {
+		cout << "Значение не найдено." << endl;
+	}
 }
 
 //Сортировка списка по убыванию
-void sortList(LIST *ph) {
+LIST * sortList(LIST * ph) {
+	return ph;
+}
 
+//удаление элементов, превышающих данное значение
+LIST * deleteList(LIST *ph, double value) {
+	return ph;
+}
+
+//"Для продолжения намите любую клавишу . . ."
+void cont() {
+	cout << "Для продолжения намите любую клавишу . . . ";
+	_getch();
 }

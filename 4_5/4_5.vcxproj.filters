@@ -23,8 +23,5 @@
     <Text Include="input.txt">
       <Filter>Файлы исходного кода</Filter>
     </Text>
-    <Text Include="output.txt">
-      <Filter>Файлы исходного кода</Filter>
-    </Text>
   </ItemGroup>
 </Project>
