@@ -30,8 +30,8 @@ void printList(LIST *ph);
 void menu(LIST *ph);
 void cont();
 void findValue(LIST * ph, double temp);
-LIST * sortList(LIST * ph);
-LIST * deleteList(LIST * ph, double value);
+void sortList(LIST * ph);
+void deleteList(LIST * ph, double value);
 LIST * addList(LIST * ph, double v);
 
 int main(int argc, char * argv[]) {
@@ -47,8 +47,6 @@ int main(int argc, char * argv[]) {
 	}
 	fin.close();
 
-	printList(ph);
-	cont();
 	menu(ph);
 	return 0;
 }
@@ -104,16 +102,16 @@ void menu(LIST * ph) {
 	cout << "\t1. Вставка элемента в конец списка." << endl;
 	cout << "\t2. Удалить все элементы, которые больше зачения." << endl;
 	cout << "\t3. Поиск элемента." << endl;
-	cout << "\t-4. Сортировка списка по убыванию." << endl;
+	cout << "\t4. Сортировка списка по убыванию." << endl;
 	cout << "\t5. Вывод списка на экран." << endl;
 	cout << "\t6. Выйти из программы." << endl;
 	cin >> m;
 
 	switch (m) {
 	case(1): cout << "Введите значение: "; cin >> temp; addList(ph, temp);  break;
-	case(2): cout << "Введите значение: " << endl; cin >> temp; ph = deleteList(ph, temp); break;
+	case(2): cout << "Введите значение: " << endl; cin >> temp; deleteList(ph, temp); break;
 	case(3): cout << "Введите значение: " << endl; cin >> temp; findValue(ph, temp); break;
-	case(4): ph = sortList(ph); cout << "Сортировка выполнена успешно." << endl; break;
+	case(4): sortList(ph); cout << "Сортировка выполнена успешно." << endl; break;
 	case(5): printList(ph); break;
 	case(6):
 		cout << "Вы действительно хотите выйти из программы? (y/n)" << endl;
@@ -144,12 +142,32 @@ void findValue(LIST * ph, double value) {
 }
 
 //Сортировка списка по убыванию
-LIST * sortList(LIST * ph) {
-	return ph;
+void sortList(LIST * ph) {
+	double temp;
+	LIST *cur;
+	
+	bool exit = false; 
+
+	while (!exit) {
+		exit = true;
+		for (cur = ph; cur->pnext->pnext != NULL; cur = cur->pnext)
+			if (cur->val < cur->pnext->val) {
+				temp = cur->val;
+				cur->val = cur->pnext->val;
+				cur->pnext->val = temp;
+				exit = false; 
+			}
+		if (cur->val < cur->pnext->val) {
+			temp = cur->val;
+			cur->val = cur->pnext->val;
+			cur->pnext->val = temp;
+			exit = false;
+		}
+	}
 }
 
 //удаление элементов, превышающих данное значение
-LIST * deleteList(LIST * ph, double value) {
+void deleteList(LIST * ph, double value) {
 	LIST * cur = ph;
 	for (cur = cur->pnext; cur->pnext != NULL; cur = cur->pnext) {
 		if (cur->val > value) {
@@ -167,11 +185,11 @@ LIST * deleteList(LIST * ph, double value) {
 		ph->prev = NULL;
 	}
 	if (cur->pnext == NULL && cur->val > value) {
+		LIST * temp = cur;
 		cur = cur->prev;
-		delete cur->pnext;
+		delete temp;
 		cur->pnext = NULL;
 	}
-	return ph;
 }
 
 //"Для продолжения намите любую клавишу . . ."
