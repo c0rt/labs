@@ -25,19 +25,23 @@
 
 #include <iostream>
 #include <fstream>
+#include <string>
 
 using namespace std;
 
 struct LIST {
 	double val;
-	LIST* pnext;
-	LIST* prev;
+	LIST *pnext;
+	LIST *prev;
 };
 
-void printList(LIST * ph);
-LIST* addList(LIST * ph, double v);
+void printList(LIST *ph);
+void menu(LIST *ph);
+void findValue(LIST * ph, double temp);
+void sortList(LIST * ph);
+LIST* addList(LIST *ph, double v);
 
-int main(int argc, char* argv[]) {
+int main(int argc, char *argv[]) {
 	setlocale(0, "Rus");
 
 	ifstream fin("input.txt");
@@ -48,26 +52,23 @@ int main(int argc, char* argv[]) {
 	while (fin >> temp) {
 		ph = addList(ph, temp);
 	}
-
-	/*for (int i = 0; i <= 10; i++) {
-		int k = rand() % 100;
-		ph = addList(ph, k);
-	}*/
-
+	cout << "Данные успешно считаы из файла:" << endl;
 	printList(ph);
+
+	menu(ph);
 	return 0;
 }
 
 //инициализация списка
-LIST * init(double v) {
-	LIST * pnew = new LIST;
+LIST *init(double v) {
+	LIST *pnew = new LIST;
 	pnew->val = v;
 	pnew->pnext = pnew->prev = NULL;
 	return pnew;
 }
 
 //добавление элемента в список
-LIST * addList(LIST * ph, double v) {
+LIST *addList(LIST *ph, double v) {
 	// 1)список пуст?
 	// 2) единственный элемент - голова
 	// 3) список частично заполнен
@@ -75,13 +76,11 @@ LIST * addList(LIST * ph, double v) {
 		ph = init(v);
 		return ph;
 	}
-	LIST* cur;
+	LIST *cur;
 	for (cur = ph; (cur->pnext != NULL) && (v>cur->val); cur = cur->pnext);
-
 	
-	if (cur->pnext == NULL)    //вставка в конец списка
-	{
-		LIST * pnew = init(v);
+	if (cur->pnext == NULL){    //вставка в конец списка
+		LIST *pnew = init(v);
 		cur->pnext = pnew;
 		pnew->prev = cur;
 		return ph;
@@ -90,16 +89,18 @@ LIST * addList(LIST * ph, double v) {
 	return ph;
 }
 
-//вывод в стандартный поток списка
+//вывод списка в стандартный поток
 void printList(LIST *ph) {
 	for (LIST*cur = ph; cur != NULL; cur = cur->pnext)
 		cout << cur->val << endl;
 }
 
 //Процедура вывода меню
-void menu() {
+void menu(LIST *ph) {
 	short unsigned int m;
 	double temp;
+
+	string s;
 
 	system("cls");
 	for (int i = 0; i < 15; i++) {
@@ -107,17 +108,37 @@ void menu() {
 	}
 	cout << endl << "Меню действий над списком:" << endl;
 	cout << "1. Вставка элемента в конец списка." << endl;
-	cout << "2. Удалить все элементы, которые больше, чем введеное число." << endl;
+	cout << "2. Удалить все элементы, которые больше зачения." << endl;
 	cout << "3. Поиск элемента." << endl;
 	cout << "4. Сортировка списка по убыванию." << endl;
 	cout << "5. Вывод списка на экран." << endl;
 	cout << "6. Выйти из программы." << endl;
 	cin >> m;
 	switch (m) {
-	case(1): cout << "Введите число, которое хотите добавить в конец списка:" << endl;  break;
+	case(1): cout << "Введите значение, которое хотите добавить в конец списка:" << endl;  break;
+	case(2): cout << "Введите значение:" << endl; cin >> temp;  break;
+	case(3): cout << "Введите значение:" << endl; cin >> temp; findValue(ph, temp); break;
+	case(4): sortList(ph); break;
+	case(5): system("cls"); printList(ph); break;
+	case(6):
+		cout << "Вы действительно хотите закрыть программу? (y/n)" << endl;
+		cin >> s;
+		if (s == "y" || s == "у" || s == "д")
+			return;
+		break;
 	default:
 		cout << "Введено некорректное значеие, повторите попытку." << endl;
 		break;
 	}
-	menu();
+	menu(ph);
+}
+
+//Поиск заданного значения в списке
+void findValue(LIST *ph, double temp) {
+	
+}
+
+//Сортировка списка по убыванию
+void sortList(LIST *ph) {
+
 }
