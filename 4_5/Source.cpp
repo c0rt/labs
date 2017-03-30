@@ -45,6 +45,7 @@ int main(int argc, char * argv[]) {
 	while (fin >> temp) {
 		ph = addList(ph, temp);
 	}
+	fin.close();
 
 	printList(ph);
 	cont();
@@ -101,7 +102,7 @@ void menu(LIST * ph) {
 
 	cout << endl << "\t\tМеню действий над списком:" << endl;
 	cout << "\t1. Вставка элемента в конец списка." << endl;
-	cout << "\t-2. Удалить все элементы, которые больше зачения." << endl;
+	cout << "\t2. Удалить все элементы, которые больше зачения." << endl;
 	cout << "\t3. Поиск элемента." << endl;
 	cout << "\t-4. Сортировка списка по убыванию." << endl;
 	cout << "\t5. Вывод списка на экран." << endl;
@@ -135,7 +136,8 @@ void findValue(LIST * ph, double value) {
 	for (cur = ph; (cur->val != value) && (cur->pnext != NULL); cur = cur->pnext)
 		counter++;
 	if (cur->val == value) {
-		cout << "Найденное значние: " << cur->val << " В списке под номером " << counter << endl;
+		cout << "Найденное значние: " << cur->val << endl;
+		cout << "В списке под номером: " << counter << endl;
 	} else if (cur->pnext == NULL) {
 		cout << "Значение не найдено." << endl;
 	}
@@ -147,7 +149,28 @@ LIST * sortList(LIST * ph) {
 }
 
 //удаление элементов, превышающих данное значение
-LIST * deleteList(LIST *ph, double value) {
+LIST * deleteList(LIST * ph, double value) {
+	LIST * cur = ph;
+	for (cur = cur->pnext; cur->pnext != NULL; cur = cur->pnext) {
+		if (cur->val > value) {
+			LIST * temp = cur;
+			cur->pnext->prev = temp->prev;
+			cur->prev->pnext = temp->pnext;
+			cur = cur->prev;
+			delete temp;
+		}
+	}
+	if (ph->prev == NULL && ph->val > value) {
+		LIST * temp = ph;
+		ph = ph->pnext;
+		delete temp;
+		ph->prev = NULL;
+	}
+	if (cur->pnext == NULL && cur->val > value) {
+		cur = cur->prev;
+		delete cur->pnext;
+		cur->pnext = NULL;
+	}
 	return ph;
 }
 
