@@ -30,8 +30,8 @@ void printList(LIST *ph);
 void menu(LIST *ph);
 void cont();
 void findValue(LIST * ph, double temp);
-void sortList(LIST * ph);
-void deleteList(LIST * ph, double value);
+LIST * sortList(LIST * ph);
+LIST * deleteList(LIST * ph, double value);
 LIST * addList(LIST * ph, double v);
 
 int main(int argc, char * argv[]) {
@@ -69,7 +69,7 @@ LIST * addList(LIST * ph, double v) {
 	LIST * cur;
 	for (cur = ph; (cur->pnext != NULL); cur = cur->pnext);
 	
-	if (cur->pnext == NULL) {    //вставка в конец списка
+	if (cur->pnext == NULL) { //вставка в конец списка
 		LIST *pnew = init(v);
 		cur->pnext = pnew;
 		pnew->prev = cur;
@@ -80,6 +80,10 @@ LIST * addList(LIST * ph, double v) {
 
 //вывод списка в стандартный поток
 void printList(LIST * ph) {
+	if (ph == NULL) {
+		cout << "Список пуст, добавьте знаения!" << endl;
+		return;
+	}
 	system("cls");
 	cout << "Значения в списке:" << endl;
 	for (LIST*cur = ph; cur != NULL; cur = cur->pnext)
@@ -108,10 +112,10 @@ void menu(LIST * ph) {
 	cin >> m;
 
 	switch (m) {
-	case(1): cout << "Введите значение: "; cin >> temp; addList(ph, temp);  break;
-	case(2): cout << "Введите значение: " << endl; cin >> temp; deleteList(ph, temp); break;
+	case(1): cout << "Введите значение: "; cin >> temp; ph = addList(ph, temp);  break;
+	case(2): cout << "Введите значение: " << endl; cin >> temp; ph = deleteList(ph, temp); break;
 	case(3): cout << "Введите значение: " << endl; cin >> temp; findValue(ph, temp); break;
-	case(4): sortList(ph); cout << "Сортировка выполнена успешно." << endl; break;
+	case(4): ph = sortList(ph); break;
 	case(5): printList(ph); break;
 	case(6):
 		cout << "Вы действительно хотите выйти из программы? (y/n)" << endl;
@@ -129,6 +133,10 @@ void menu(LIST * ph) {
 
 //Поиск заданного значения в списке
 void findValue(LIST * ph, double value) {
+	if (ph == NULL) {
+		cout << "Список пуст, добавьте знаения!" << endl;
+		return;
+	}
 	unsigned int counter = 1;
 	LIST * cur = ph;
 	for (cur = ph; (cur->val != value) && (cur->pnext != NULL); cur = cur->pnext)
@@ -142,7 +150,11 @@ void findValue(LIST * ph, double value) {
 }
 
 //Сортировка списка по убыванию
-void sortList(LIST * ph) {
+LIST * sortList(LIST * ph) {
+	if (ph == NULL) {
+		cout << "Список пуст, добавьте знаения!" << endl;
+		return ph;
+	}
 	double temp;
 	LIST *cur;
 	
@@ -164,10 +176,18 @@ void sortList(LIST * ph) {
 			exit = false;
 		}
 	}
+
+	cout << "Сортировка выполнена успешно." << endl;
+
+	return ph;
 }
 
 //удаление элементов, превышающих данное значение
-void deleteList(LIST * ph, double value) {
+LIST * deleteList(LIST * ph, double value) {
+	if (ph == NULL) {
+		cout << "Список пуст, добавьте знаения!" << endl;
+		return ph;
+	}
 	LIST * cur = ph;
 	for (cur = cur->pnext; cur->pnext != NULL; cur = cur->pnext) {
 		if (cur->val > value) {
@@ -184,12 +204,18 @@ void deleteList(LIST * ph, double value) {
 		delete temp;
 		ph->prev = NULL;
 	}
+	if (ph->prev == NULL && ph->pnext == NULL && ph->val > value) {
+		ph = NULL;
+		cout << "Из списка удалены все данные!" << endl;
+		return ph;
+	}
 	if (cur->pnext == NULL && cur->val > value) {
 		LIST * temp = cur;
 		cur = cur->prev;
 		delete temp;
 		cur->pnext = NULL;
 	}
+	return ph;
 }
 
 //"Для продолжения намите любую клавишу . . ."
